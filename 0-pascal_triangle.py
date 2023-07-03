@@ -1,4 +1,6 @@
-eturns list representing the Pascal's triangle of n
+#!/usr/bin/python3
+'''
+Returns list representing the Pascal's triangle of n
 '''
 
 
