@@ -1,26 +1,22 @@
+#!/usr/bin/python3
+"""UTF-8 Validation"""
 
-#!/usr/bin/node
-const request = require('request');
-const movieId = process.argv[2];
-const options = {
-  url: 'https://swapi-api.hbtn.io/api/films/' + movieId,
-  method: 'GET'
-};
 
-request(options, function (error, response, body) {
-  if (!error) {
-    const characters = JSON.parse(body).characters;
-    printCharacters(characters, 0);
-  }
-});
-
-function printCharacters (characters, index) {
-  request(characters[index], function (error, response, body) {
-    if (!error) {
-      console.log(JSON.parse(body).name);
-      if (index + 1 < characters.length) {
-        printCharacters(characters, index + 1);
-      }
-    }
-  });
-}
+def validUTF8(data):
+    """UTF-8 Validator"""
+    count = 0
+    for i in data:
+        if count == 0:
+            if i >> 5 == 0b110 or i >> 5 == 0b1110:
+                count = 1
+            elif i >> 4 == 0b1110:
+                count = 2
+            elif i >> 3 == 0b11110:
+                count = 3
+            elif i >> 7 == 0b1:
+                return False
+        else:
+            if i >> 6 != 0b10:
+                return False
+            count -= 1
+    return count == 0
