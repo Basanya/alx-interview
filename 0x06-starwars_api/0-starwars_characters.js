@@ -1,25 +1,34 @@
 #!/usr/bin/node
+
+// Star Wars Characters
+
 const request = require('request');
-const movieId = process.argv[2];
-const options = {
-  url: 'https://swapi-api.hbtn.io/api/films/' + movieId,
-  method: 'GET'
-};
-
-request(options, function (error, response, body) {
-  if (!error) {
-    const characters = JSON.parse(body).characters;
-    printCharacters(characters, 0);
+const id = process.argv[2];
+const url = `https://swapi-api.alx-tools.com/api/films/${id}`;
+request(url, (err, res, body) => {
+  if (err) {
+    console.error(err);
   }
-});
-
-function printCharacters (characters, index) {
-  request(characters[index], function (error, response, body) {
-    if (!error) {
-      console.log(JSON.parse(body).name);
-      if (index + 1 < characters.length) {
-        printCharacters(characters, index + 1);
-      }
-    }
+  const data = JSON.parse(body);
+  const characters = data.characters;
+  const promises = characters.map((character) => {
+    return new Promise((resolve, reject) => {
+      request(character, (error, resp, bodd) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+          return;
+        }
+        const dat = JSON.parse(bodd);
+        resolve(dat.name);
+      });
+    });
   });
-}
+  Promise.all(promises)
+    .then((names) => {
+      names.forEach((name) => console.log(name));
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
